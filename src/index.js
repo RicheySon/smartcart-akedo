@@ -9,6 +9,7 @@ const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const { apiRateLimiter } = require('./middleware/rateLimiter');
 const healthRouter = require('./routes/health');
 const inventoryRouter = require('./routes/inventory');
+const forecastingRouter = require('./routes/forecasting');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -32,6 +33,7 @@ app.use(apiRateLimiter);
 
 app.use('/api', healthRouter);
 app.use('/api/inventory', inventoryRouter);
+app.use('/api/forecast', forecastingRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
