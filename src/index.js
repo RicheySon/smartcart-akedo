@@ -10,6 +10,9 @@ const { apiRateLimiter } = require('./middleware/rateLimiter');
 const healthRouter = require('./routes/health');
 const inventoryRouter = require('./routes/inventory');
 const forecastingRouter = require('./routes/forecasting');
+const transactionsRouter = require('./routes/transactions');
+const auditRouter = require('./routes/audit');
+const shoppingRouter = require('./routes/shopping');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -34,6 +37,9 @@ app.use(apiRateLimiter);
 app.use('/api', healthRouter);
 app.use('/api/inventory', inventoryRouter);
 app.use('/api/forecast', forecastingRouter);
+app.use('/api/transactions', transactionsRouter);
+app.use('/api/audit', auditRouter);
+app.use('/api/shopping', shoppingRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
