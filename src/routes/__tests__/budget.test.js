@@ -96,6 +96,9 @@ const vendorRouter = express.Router();
 budgetRouter.post('/set-cap', (req, res) => {
   try {
     const { period, amount } = req.body;
+    if (typeof amount !== 'number' || amount < 0) {
+      return res.status(400).json({ success: false, error: { message: 'Amount must be a non-negative number' } });
+    }
     const result = budgetService.setBudgetCap(period, amount);
     res.json({ success: true, data: result });
   } catch (error) {
@@ -122,6 +125,9 @@ budgetRouter.post('/check', (req, res) => {
 budgetRouter.post('/transaction', (req, res) => {
   try {
     const { vendor, cost } = req.body;
+    if (typeof cost !== 'number' || cost < 0) {
+      return res.status(400).json({ success: false, error: { message: 'Cost must be a non-negative number' } });
+    }
     const result = budgetService.addSpendingTransaction(vendor, cost);
     res.json({ success: true, data: result });
   } catch (error) {

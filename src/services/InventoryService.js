@@ -81,6 +81,10 @@ class InventoryService {
         throw new Error('Receipt data must contain an items array');
       }
 
+      if (receiptData.items.length === 0) {
+        throw new Error('Receipt items array cannot be empty');
+      }
+
       const results = {
         success: true,
         added: [],
