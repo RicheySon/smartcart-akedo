@@ -1,3 +1,4 @@
+const db = require('../db/index');
 const logger = require('../utils/logger');
 
 const CATEGORY_USAGE_RATES = {
@@ -13,42 +14,23 @@ const DEFAULT_RUNOUT_DAYS = 7;
 
 class ForecastingService {
   constructor() {
-    this.usageHistory = new Map();
-    this.initializeMockData();
+    // Legacy in-memory Map removed.
+    // Data now lives in db 'usage_history' collection.
   }
 
+  // Mock data init is now handled via DB seeding if needed, or we treat empty DB as empty.
   initializeMockData() {
-    const mockItems = [
-      { name: 'Milk', category: 'dairy', history: [
-        { days_ago: 7, quantity: 2000 },
-        { days_ago: 6, quantity: 1850 },
-        { days_ago: 5, quantity: 1700 },
-        { days_ago: 4, quantity: 1550 },
-        { days_ago: 3, quantity: 1400 },
-        { days_ago: 2, quantity: 1250 },
-        { days_ago: 1, quantity: 1100 },
-        { days_ago: 0, quantity: 1000 },
-      ]},
-      { name: 'Eggs', category: 'dairy', history: [
-        { days_ago: 12, quantity: 12 },
-        { days_ago: 10, quantity: 11 },
-        { days_ago: 8, quantity: 10 },
-        { days_ago: 6, quantity: 9 },
-        { days_ago: 4, quantity: 8 },
-        { days_ago: 2, quantity: 7 },
-        { days_ago: 0, quantity: 6 },
-      ]},
-      { name: 'Bread', category: 'pantry', history: [
-        { days_ago: 3, quantity: 3 },
-        { days_ago: 2, quantity: 2 },
-        { days_ago: 1, quantity: 1 },
-        { days_ago: 0, quantity: 1 },
-      ]},
-    ];
-
-    mockItems.forEach(item => {
-      this.usageHistory.set(item.name.toLowerCase(), item.history);
-    });
+    // Optional: Seed DB if empty
+    const existing = db.getCollection('usage_history');
+    if (existing.length === 0) {
+      const mockItems = [
+        { name: 'Milk', category: 'dairy', history: [{ days_ago: 7, quantity: 2000 }, { days_ago: 0, quantity: 1000 }] }
+        // Add more if needed for demo
+      ];
+      mockItems.forEach(item => {
+        db.insert('usage_history', { name: item.name.toLowerCase(), history: item.history });
+      });
+    }
   }
 
   simpleLinearRegression(data) {
@@ -145,12 +127,12 @@ class ForecastingService {
     runoutDate.setDate(runoutDate.getDate() + Math.ceil(daysUntilRunout));
 
     let confidence = 0.7;
-    if (itemName && this.usageHistory.has(itemName.toLowerCase())) {
-      const history = this.usageHistory.get(itemName.toLowerCase());
-      if (history.length >= 5) {
-        confidence = 0.9;
-      } else if (history.length >= 3) {
-        confidence = 0.8;
+    // Check history from DB
+    if (itemName) {
+      const entry = db.findOne('usage_history', h => h.name === itemName.toLowerCase());
+      if (entry && entry.history) {
+        if (entry.history.length >= 5) confidence = 0.9;
+        else if (entry.history.length >= 3) confidence = 0.8;
       }
     }
 
@@ -167,47 +149,45 @@ class ForecastingService {
   }
 
   getUsageHistory(itemName) {
-    const key = itemName.toLowerCase();
-    if (this.usageHistory.has(key)) {
-      return this.usageHistory.get(key);
-    }
-    return [];
+    const entry = db.findOne('usage_history', h => h.name === itemName.toLowerCase());
+    return entry ? entry.history : [];
   }
 
   recordUsage(itemName, quantityConsumed, currentQuantity) {
     const key = itemName.toLowerCase();
-    const history = this.usageHistory.get(key) || [];
-    
-    const today = new Date();
-    const latestEntry = history[0];
-    
-    if (latestEntry && latestEntry.days_ago === 0) {
-      latestEntry.quantity = currentQuantity;
-    } else {
-      history.unshift({
-        days_ago: 0,
-        quantity: currentQuantity,
-      });
+    let entry = db.findOne('usage_history', h => h.name === key);
+
+    if (!entry) {
+      entry = { name: key, history: [] };
+      db.insert('usage_history', entry);
     }
 
-    for (let i = 1; i < history.length; i++) {
-      history[i].days_ago += 1;
-    }
+    // We work on a copy of history, then update
+    const history = [...entry.history];
 
-    if (history.length > 30) {
-      history.pop();
-    }
+    // Logic: If latest entry is today (days_ago 0), update it. Else push new.
+    // Note: This logic assumes 'days_ago' is managed relative to a baseline or updated daily.
+    // For MVP, we'll simple add new entry at 0.
 
-    this.usageHistory.set(key, history);
-    logger.info(`Recorded usage for ${itemName}: consumed ${quantityConsumed}, current: ${currentQuantity}`);
-    
+    history.unshift({
+      days_ago: 0,
+      quantity: currentQuantity,
+      timestamp: new Date().toISOString()
+    });
+
+    if (history.length > 30) history.pop(); // Keep 30 entries
+
+    // Update DB
+    db.update('usage_history', h => h.name === key, { history: history });
+
+    logger.info(`Recorded usage for ${itemName}: consumed ${quantityConsumed}`);
     return history;
   }
 
   predictItemRunOut(item) {
     const itemName = item.name.toLowerCase();
     const history = this.getUsageHistory(item.name);
-    
+
     let dailyUsageRate;
     let regressionResult = null;
     let confidence = 0.5;
@@ -243,14 +223,14 @@ class ForecastingService {
 
   generateShoppingList(inventory) {
     const predictions = inventory.map(item => this.predictItemRunOut(item));
-    
+
     const urgent = [];
     const soon = [];
     const planned = [];
 
     predictions.forEach(pred => {
       const days = pred.prediction.days_until_runout;
-      
+
       if (pred.prediction.status === 'out_of_stock') {
         urgent.push(pred);
       } else if (pred.prediction.status === 'predicted') {

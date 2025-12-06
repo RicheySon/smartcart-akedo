@@ -179,7 +179,16 @@ const importReceipt = asyncHandler(async (req, res) => {
     });
   }
 
-  const result = inventoryService.importFromReceipt(receiptData);
+  const result = inventoryService.importFromReceipt(receiptData.items, receiptData.purchase_date);
+  res.status(200).json(result);
+});
+
+const importOCR = asyncHandler(async (req, res) => {
+  const { text } = req.body;
+  if (!text || typeof text !== 'string') {
+    return res.status(400).json({ success: false, error: { message: 'Raw text is required' } });
+  }
+  const result = await inventoryService.importParsedReceipt(text);
   res.status(200).json(result);
 });
 
@@ -225,6 +234,8 @@ module.exports = {
   importReceipt,
   getExpiringSoon,
   getByCategory,
+  getByCategory,
   getTotalValue,
+  importOCR
 };
 
