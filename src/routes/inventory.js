@@ -9,7 +9,6 @@ const {
   importReceipt,
   getExpiringSoon,
   getByCategory,
-  getByCategory,
   getTotalValue,
   importOCR
 } = require('../controllers/InventoryController');
