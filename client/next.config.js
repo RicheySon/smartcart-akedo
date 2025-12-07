@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    // Disable static page generation to prevent build errors
+    output: 'standalone',
     // For Vercel deployment, API routes are handled by serverless functions in /api
     // For local development, proxy to Express backend
     async rewrites() {
