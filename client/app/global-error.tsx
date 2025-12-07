@@ -1,3 +1,6 @@
+// Global error boundary - must be a server component
+// Use a simple form with page reload instead of reset function
+
 export default function GlobalError({
     error,
     reset,
@@ -12,15 +15,13 @@ export default function GlobalError({
                     <div className="text-center">
                         <h1 className="mb-4 text-6xl font-bold text-red-400">Error</h1>
                         <p className="mb-4 text-xl text-gray-400">Something went wrong</p>
-                        <p className="mb-8 text-sm text-gray-500">{error.message}</p>
-                        <form action={reset}>
-                            <button
-                                type="submit"
-                                className="rounded-lg bg-gradient-to-r from-indigo-500 to-cyan-500 px-6 py-3 font-semibold text-white transition-all hover:scale-105"
-                            >
-                                Try again
-                            </button>
-                        </form>
+                        <p className="mb-8 text-sm text-gray-500">{error.message || 'An unexpected error occurred'}</p>
+                        <a
+                            href="/"
+                            className="inline-block rounded-lg bg-gradient-to-r from-indigo-500 to-cyan-500 px-6 py-3 font-semibold text-white transition-all hover:scale-105 cursor-pointer"
+                        >
+                            Go Home
+                        </a>
                     </div>
                 </div>
             </body>
