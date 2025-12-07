@@ -1,7 +1,7 @@
+'use client'
+
 import Link from 'next/link'
 import { ArrowRight, Sparkles, ShoppingCart, Brain } from 'lucide-react'
-
-export const dynamic = 'force-dynamic'
 
 export default function HomePage() {
     return (
