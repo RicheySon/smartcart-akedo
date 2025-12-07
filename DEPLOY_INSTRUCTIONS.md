@@ -379,3 +379,4 @@ Your project is **READY** for deployment!
 
 **Deploy now and your SmartCart will be live! 🚀**
 
+

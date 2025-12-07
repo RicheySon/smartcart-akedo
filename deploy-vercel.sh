@@ -34,3 +34,4 @@ vercel --prod
 echo "✅ Deployment complete!"
 echo "🌐 Your app should be live at: https://smartcart-akedo.vercel.app"
 
+
