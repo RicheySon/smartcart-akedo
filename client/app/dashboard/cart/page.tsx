@@ -6,6 +6,8 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useUIStore } from '@/lib/store'
 
+export const dynamic = 'force-dynamic'
+
 export default function CartPage() {
     const { data: cart, isLoading } = useCart()
     const addToCart = useAddToCart()
@@ -130,59 +132,59 @@ export default function CartPage() {
                             </div>
                         ) : (
                             <>
-                        {searchResults.amazon && searchResults.amazon.name && (
-                            <div className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/50 p-4">
-                                <div className="flex-1">
-                                    <div className="mb-1 flex items-center gap-2">
-                                        <span className="rounded bg-orange-500/20 px-2 py-0.5 text-xs font-semibold text-orange-400">
-                                            Amazon
-                                        </span>
+                                {searchResults.amazon && searchResults.amazon.name && (
+                                    <div className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/50 p-4">
+                                        <div className="flex-1">
+                                            <div className="mb-1 flex items-center gap-2">
+                                                <span className="rounded bg-orange-500/20 px-2 py-0.5 text-xs font-semibold text-orange-400">
+                                                    Amazon
+                                                </span>
+                                            </div>
+                                            <h3 className="font-semibold text-white">{searchResults.amazon.name}</h3>
+                                            <p className="text-lg font-bold text-green-400">${searchResults.amazon.price.toFixed(2)}</p>
+                                            {searchResults.amazon.rating && (
+                                                <p className="text-sm text-gray-400">⭐ {searchResults.amazon.rating}/5</p>
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={() => handleAddProductToCart(searchResults.amazon, 'amazon')}
+                                            className="rounded-lg bg-indigo-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-indigo-600"
+                                        >
+                                            Add
+                                        </button>
                                     </div>
-                                    <h3 className="font-semibold text-white">{searchResults.amazon.name}</h3>
-                                    <p className="text-lg font-bold text-green-400">${searchResults.amazon.price.toFixed(2)}</p>
-                                    {searchResults.amazon.rating && (
-                                        <p className="text-sm text-gray-400">⭐ {searchResults.amazon.rating}/5</p>
-                                    )}
-                                </div>
-                                <button
-                                    onClick={() => handleAddProductToCart(searchResults.amazon, 'amazon')}
-                                    className="rounded-lg bg-indigo-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-indigo-600"
-                                >
-                                    Add
-                                </button>
-                            </div>
-                        )}
+                                )}
 
-                        {searchResults.walmart && (
-                            <div className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/50 p-4">
-                                <div className="flex-1">
-                                    <div className="mb-1 flex items-center gap-2">
-                                        <span className="rounded bg-blue-500/20 px-2 py-0.5 text-xs font-semibold text-blue-400">
-                                            Walmart
-                                        </span>
+                                {searchResults.walmart && (
+                                    <div className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/50 p-4">
+                                        <div className="flex-1">
+                                            <div className="mb-1 flex items-center gap-2">
+                                                <span className="rounded bg-blue-500/20 px-2 py-0.5 text-xs font-semibold text-blue-400">
+                                                    Walmart
+                                                </span>
+                                            </div>
+                                            <h3 className="font-semibold text-white">{searchResults.walmart.name}</h3>
+                                            <p className="text-lg font-bold text-green-400">${searchResults.walmart.price.toFixed(2)}</p>
+                                            {searchResults.walmart.rating && (
+                                                <p className="text-sm text-gray-400">⭐ {searchResults.walmart.rating}/5</p>
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={() => handleAddProductToCart(searchResults.walmart, 'walmart')}
+                                            className="rounded-lg bg-indigo-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-indigo-600"
+                                        >
+                                            Add
+                                        </button>
                                     </div>
-                                    <h3 className="font-semibold text-white">{searchResults.walmart.name}</h3>
-                                    <p className="text-lg font-bold text-green-400">${searchResults.walmart.price.toFixed(2)}</p>
-                                    {searchResults.walmart.rating && (
-                                        <p className="text-sm text-gray-400">⭐ {searchResults.walmart.rating}/5</p>
-                                    )}
-                                </div>
-                                <button
-                                    onClick={() => handleAddProductToCart(searchResults.walmart, 'walmart')}
-                                    className="rounded-lg bg-indigo-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-indigo-600"
-                                >
-                                    Add
-                                </button>
-                            </div>
-                        )}
+                                )}
 
-                        {searchResults.comparison?.recommendation && (
-                            <div className="rounded-lg border-l-4 border-indigo-500 bg-indigo-500/10 p-4">
-                                <p className="text-sm text-indigo-300">
-                                    💡 {searchResults.comparison.recommendation}
-                                </p>
-                            </div>
-                        )}
+                                {searchResults.comparison?.recommendation && (
+                                    <div className="rounded-lg border-l-4 border-indigo-500 bg-indigo-500/10 p-4">
+                                        <p className="text-sm text-indigo-300">
+                                            💡 {searchResults.comparison.recommendation}
+                                        </p>
+                                    </div>
+                                )}
                             </>
                         )}
                     </div>

@@ -5,6 +5,8 @@ import { Package, Plus, Trash2, Edit2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 
+export const dynamic = 'force-dynamic'
+
 export default function InventoryPage() {
     const { data: inventory, isLoading } = useInventory()
     const addItem = useAddInventoryItem()
