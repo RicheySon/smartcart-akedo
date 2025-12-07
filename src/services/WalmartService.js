@@ -7,6 +7,9 @@ const MOCK_WALMART_PRODUCTS = [
   { id: 'wal-002', name: 'Great Value Large White Eggs 12 Count', price: 1.86, category: 'dairy', rating: 4.4, in_stock: true, vendor: 'walmart', unit: 'carton' },
   { id: 'wal-003', name: 'Great Value Sandwich Bread', price: 1.32, category: 'bakery', rating: 4.0, in_stock: true, vendor: 'walmart', unit: 'loaf' },
   { id: 'wal-004', name: 'Bananas Bunch', price: 1.50, category: 'produce', rating: 4.5, in_stock: true, vendor: 'walmart', unit: 'lb' },
+  { id: 'wal-005', name: 'Great Value Vegetable Oil 48 fl oz', price: 4.24, category: 'pantry', rating: 4.1, in_stock: true, vendor: 'walmart', unit: 'bottle' },
+  { id: 'wal-006', name: 'Great Value Olive Oil 17 fl oz', price: 6.97, category: 'pantry', rating: 4.3, in_stock: true, vendor: 'walmart', unit: 'bottle' },
+  { id: 'wal-007', name: 'Fresh Chicken Breast 1 lb', price: 4.98, category: 'meat', rating: 4.5, in_stock: true, vendor: 'walmart', unit: 'lb' },
 ];
 
 class WalmartService {
@@ -62,4 +65,6 @@ class WalmartService {
 }
 
 module.exports = new WalmartService();
+
+
 

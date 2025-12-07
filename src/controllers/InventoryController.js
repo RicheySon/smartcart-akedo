@@ -76,7 +76,7 @@ const addItem = asyncHandler(async (req, res) => {
 });
 
 const getInventory = asyncHandler(async (req, res) => {
-  const result = inventoryService.getInventory();
+  const result = await inventoryService.getInventory();
   res.status(200).json(result);
 });
 
@@ -238,5 +238,7 @@ module.exports = {
   getTotalValue,
   importOCR
 };
+
+
 
 

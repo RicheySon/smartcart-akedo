@@ -27,11 +27,17 @@ export default function CartPage() {
         setSearching(true)
         try {
             const res = await fetch(`/api/shopping/compare/${encodeURIComponent(searchQuery)}`)
-            const data = await res.json()
+            if (!res.ok) {
+                throw new Error(`API error: ${res.statusText}`)
+            }
+            const response = await res.json()
+            // Handle wrapped response format { success: true, data: {...} }
+            const data = response.data || response
             setSearchResults(data)
         } catch (error) {
             console.error('Search failed:', error)
-            alert('Search failed. Make sure the backend is running.')
+            alert(`Search failed: ${error instanceof Error ? error.message : 'Unknown error'}. Make sure the backend is running.`)
+            setSearchResults(null)
         } finally {
             setSearching(false)
         }
@@ -65,7 +71,6 @@ export default function CartPage() {
 
     const handleCheckout = () => {
         setOrderModalOpen(true)
-        alert('Order approval modal - to be implemented')
     }
 
     return (
@@ -119,7 +124,13 @@ export default function CartPage() {
                 {/* Search Results */}
                 {searchResults && (
                     <div className="space-y-3">
-                        {searchResults.amazon && (
+                        {(!searchResults.amazon || !searchResults.amazon.name) && (!searchResults.walmart || !searchResults.walmart.name) ? (
+                            <div className="rounded-lg border border-slate-700 bg-slate-800/50 p-6 text-center">
+                                <p className="text-gray-400">No products found for "{searchQuery}". Try searching for: milk, bread, eggs, bananas, chicken, or cooking oil</p>
+                            </div>
+                        ) : (
+                            <>
+                        {searchResults.amazon && searchResults.amazon.name && (
                             <div className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/50 p-4">
                                 <div className="flex-1">
                                     <div className="mb-1 flex items-center gap-2">
@@ -171,6 +182,8 @@ export default function CartPage() {
                                     💡 {searchResults.comparison.recommendation}
                                 </p>
                             </div>
+                        )}
+                            </>
                         )}
                     </div>
                 )}

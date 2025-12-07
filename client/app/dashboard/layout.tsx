@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { LayoutDashboard, Package, ShoppingCart, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import OrderModal from '@/components/OrderModal'
 
 const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -77,6 +78,9 @@ export default function DashboardLayout({
             <main className="flex-1 overflow-y-auto">
                 {children}
             </main>
+
+            {/* Order Approval Modal - Global for all dashboard pages */}
+            <OrderModal />
         </div>
     )
 }

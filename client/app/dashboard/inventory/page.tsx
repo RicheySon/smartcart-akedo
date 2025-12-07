@@ -1,15 +1,17 @@
 'use client'
 
-import { useInventory, useAddInventoryItem, useDeleteInventoryItem } from '@/lib/api'
-import { Package, Plus, Trash2 } from 'lucide-react'
+import { useInventory, useAddInventoryItem, useUpdateInventoryItem, useDeleteInventoryItem } from '@/lib/api'
+import { Package, Plus, Trash2, Edit2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 
 export default function InventoryPage() {
     const { data: inventory, isLoading } = useInventory()
     const addItem = useAddInventoryItem()
+    const updateItem = useUpdateInventoryItem()
     const deleteItem = useDeleteInventoryItem()
     const [showModal, setShowModal] = useState(false)
+    const [editingItem, setEditingItem] = useState<any>(null)
     const [formData, setFormData] = useState({
         name: '',
         quantity: '',
@@ -24,21 +26,55 @@ export default function InventoryPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         try {
-            await addItem.mutateAsync({
-                name: formData.name,
-                quantity: parseFloat(formData.quantity),
-                unit: formData.unit,
-                category: formData.category,
-                price: formData.price ? parseFloat(formData.price) : undefined,
-                threshold: parseFloat(formData.threshold),
-            } as any)
-            setShowModal(false)
-            setFormData({ name: '', quantity: '', unit: 'unit', category: 'produce', price: '', threshold: '5' })
-            alert('Item added successfully!')
+            if (editingItem) {
+                // Update existing item
+                await updateItem.mutateAsync({
+                    id: editingItem.id,
+                    updates: {
+                        quantity: parseFloat(formData.quantity),
+                        unit: formData.unit,
+                        category: formData.category,
+                        price: formData.price ? parseFloat(formData.price) : undefined,
+                        threshold: parseFloat(formData.threshold),
+                    }
+                })
+                alert('Item updated successfully!')
+            } else {
+                // Add new item
+                await addItem.mutateAsync({
+                    name: formData.name,
+                    quantity: parseFloat(formData.quantity),
+                    unit: formData.unit,
+                    category: formData.category,
+                    price: formData.price ? parseFloat(formData.price) : undefined,
+                    threshold: parseFloat(formData.threshold),
+                } as any)
+                alert('Item added successfully!')
+            }
+            handleCloseModal()
         } catch (error) {
-            console.error('Failed to add item:', error)
-            alert('Failed to add item. Check console for details.')
+            console.error('Failed to save item:', error)
+            alert(`Failed to ${editingItem ? 'update' : 'add'} item. Check console for details.`)
         }
+    }
+
+    const handleEdit = (item: any) => {
+        setEditingItem(item)
+        setFormData({
+            name: item.name,
+            quantity: item.quantity.toString(),
+            unit: item.unit || 'unit',
+            category: item.category || 'produce',
+            price: item.price ? item.price.toString() : '',
+            threshold: item.threshold ? item.threshold.toString() : '5'
+        })
+        setShowModal(true)
+    }
+
+    const handleCloseModal = () => {
+        setShowModal(false)
+        setEditingItem(null)
+        setFormData({ name: '', quantity: '', unit: 'unit', category: 'produce', price: '', threshold: '5' })
     }
 
     const handleDelete = async (id: string) => {
@@ -93,12 +129,22 @@ export default function InventoryPage() {
                         >
                             <div className="mb-4 flex items-start justify-between">
                                 <h3 className="text-lg font-semibold text-white">{item.name}</h3>
-                                <button
-                                    onClick={() => handleDelete(item.id)}
-                                    className="text-gray-500 transition-colors hover:text-red-400"
-                                >
-                                    <Trash2 className="h-5 w-5" />
-                                </button>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => handleEdit(item)}
+                                        className="text-gray-500 transition-colors hover:text-indigo-400"
+                                        title="Edit item"
+                                    >
+                                        <Edit2 className="h-5 w-5" />
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(item.id)}
+                                        className="text-gray-500 transition-colors hover:text-red-400"
+                                        title="Delete item"
+                                    >
+                                        <Trash2 className="h-5 w-5" />
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="mb-4">
@@ -127,16 +173,18 @@ export default function InventoryPage() {
                 })}
             </div>
 
-            {/* Add Item Modal */}
+            {/* Add/Edit Item Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={() => setShowModal(false)}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={handleCloseModal}>
                     <motion.div
                         initial={{ scale: 0.95, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         onClick={(e) => e.stopPropagation()}
                         className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-900 p-6"
                     >
-                        <h2 className="mb-6 text-2xl font-bold text-white">Add New Item</h2>
+                        <h2 className="mb-6 text-2xl font-bold text-white">
+                            {editingItem ? 'Edit Item' : 'Add New Item'}
+                        </h2>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
@@ -146,9 +194,13 @@ export default function InventoryPage() {
                                     required
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-indigo-500 focus:outline-none"
+                                    disabled={!!editingItem}
+                                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-indigo-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     placeholder="e.g., Organic Milk"
                                 />
+                                {editingItem && (
+                                    <p className="mt-1 text-xs text-gray-500">Item name cannot be changed</p>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -211,7 +263,7 @@ export default function InventoryPage() {
                             <div className="flex gap-4 pt-4">
                                 <button
                                     type="button"
-                                    onClick={() => setShowModal(false)}
+                                    onClick={handleCloseModal}
                                     className="flex-1 rounded-lg border border-slate-700 px-4 py-2 font-medium text-gray-300 transition-colors hover:bg-slate-800"
                                 >
                                     Cancel
@@ -220,7 +272,7 @@ export default function InventoryPage() {
                                     type="submit"
                                     className="flex-1 rounded-lg bg-gradient-to-r from-indigo-500 to-cyan-500 px-4 py-2 font-semibold text-white transition-all hover:scale-105"
                                 >
-                                    Add Item
+                                    {editingItem ? 'Update Item' : 'Add Item'}
                                 </button>
                             </div>
                         </form>

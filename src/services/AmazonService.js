@@ -9,12 +9,23 @@ require('dotenv').config();
 const MOCK_PRODUCTS = [
   { id: 'amz-001', name: 'Organic Whole Milk 1 Gallon', price: 4.99, category: 'dairy', rating: 4.5, in_stock: true, vendor: 'amazon' },
   { id: 'amz-002', name: 'Whole Wheat Bread Loaf', price: 2.49, category: 'bakery', rating: 4.2, in_stock: true, vendor: 'amazon' },
-  // ... (keep full mock list for robustness, shortened here for brevity but assuming full list exists in memory or file)
+  { id: 'amz-003', name: 'Vegetable Cooking Oil 48 fl oz', price: 5.49, category: 'pantry', rating: 4.3, in_stock: true, vendor: 'amazon' },
+  { id: 'amz-004', name: 'Organic Olive Oil 16 fl oz', price: 8.99, category: 'pantry', rating: 4.7, in_stock: true, vendor: 'amazon' },
+  { id: 'amz-005', name: 'Fresh Bananas 3 lbs', price: 2.99, category: 'produce', rating: 4.4, in_stock: true, vendor: 'amazon' },
+  { id: 'amz-006', name: 'Large White Eggs 12 Count', price: 3.49, category: 'dairy', rating: 4.5, in_stock: true, vendor: 'amazon' },
+  { id: 'amz-007', name: 'Chicken Breast 1 lb', price: 6.99, category: 'meat', rating: 4.6, in_stock: true, vendor: 'amazon' },
 ];
 
 // Fallback Mock Data Extension (simulate large catalog)
 const searchMock = (query) => {
-  return MOCK_PRODUCTS.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+  const lowerQuery = query.toLowerCase();
+  // Flexible search - matches if query appears anywhere in product name
+  return MOCK_PRODUCTS.filter(p => {
+    const name = p.name.toLowerCase();
+    const words = lowerQuery.split(' ').filter(w => w.length > 0);
+    // Match if all words in query are found in product name
+    return words.every(word => name.includes(word));
+  });
 };
 
 class AmazonService {
@@ -66,4 +77,6 @@ class AmazonService {
 }
 
 module.exports = new AmazonService();
+
+
 

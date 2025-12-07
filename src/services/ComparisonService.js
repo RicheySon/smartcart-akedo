@@ -3,13 +3,13 @@ const walmartService = require('./WalmartService');
 const logger = require('../utils/logger');
 
 class ComparisonService {
-  comparePrices(itemName) {
+  async comparePrices(itemName) {
     if (!itemName || typeof itemName !== 'string') {
       throw new Error('Item name is required');
     }
 
-    const amazonResults = amazonService.searchProducts(itemName, 1);
-    const walmartResults = walmartService.searchProducts(itemName, 1);
+    const amazonResults = await amazonService.searchProducts(itemName, 1);
+    const walmartResults = await walmartService.searchProducts(itemName, 1);
 
     const amazonProduct = amazonResults.length > 0 ? amazonResults[0] : null;
     const walmartProduct = walmartResults.length > 0 ? walmartResults[0] : null;
@@ -91,8 +91,8 @@ class ComparisonService {
     return 'Compare both options before purchasing';
   }
 
-  findCheaperOption(itemName, preferredVendor = null) {
-    const comparison = this.comparePrices(itemName);
+  async findCheaperOption(itemName, preferredVendor = null) {
+    const comparison = await this.comparePrices(itemName);
 
     if (!comparison.amazon && !comparison.walmart) {
       return {
@@ -130,7 +130,7 @@ class ComparisonService {
     };
   }
 
-  buildOptimalCart(itemsNeeded, budget = null) {
+  async buildOptimalCart(itemsNeeded, budget = null) {
     if (!Array.isArray(itemsNeeded) || itemsNeeded.length === 0) {
       throw new Error('Items needed must be a non-empty array');
     }
@@ -153,8 +153,8 @@ class ComparisonService {
       recommendations: [],
     };
 
-    itemsNeeded.forEach(item => {
-      const comparison = this.comparePrices(item.name || item);
+    for (const item of itemsNeeded) {
+      const comparison = await this.comparePrices(item.name || item);
       const quantity = item.quantity || 1;
 
       let selectedVendor = null;
@@ -189,7 +189,7 @@ class ComparisonService {
         cart[selectedVendor].subtotal += itemTotal;
         cart[selectedVendor].shipping = Math.max(cart[selectedVendor].shipping, shipping);
       }
-    });
+    }
 
     cart.amazon.total = cart.amazon.subtotal + cart.amazon.shipping;
     cart.walmart.total = cart.walmart.subtotal + cart.walmart.shipping;
@@ -214,9 +214,9 @@ class ComparisonService {
     return 0;
   }
 
-  searchAcrossVendors(query, limit = 5) {
-    const amazonResults = amazonService.searchProducts(query, limit);
-    const walmartResults = walmartService.searchProducts(query, limit);
+  async searchAcrossVendors(query, limit = 5) {
+    const amazonResults = await amazonService.searchProducts(query, limit);
+    const walmartResults = await walmartService.searchProducts(query, limit);
 
     return {
       query,
@@ -236,5 +236,7 @@ class ComparisonService {
 }
 
 module.exports = new ComparisonService();
+
+
 
 

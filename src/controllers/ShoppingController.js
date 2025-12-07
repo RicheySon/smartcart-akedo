@@ -18,7 +18,7 @@ const searchAcrossVendors = asyncHandler(async (req, res) => {
 
   try {
     const searchLimit = parseInt(limit) || 5;
-    const results = comparisonService.searchAcrossVendors(query, searchLimit);
+    const results = await comparisonService.searchAcrossVendors(query, searchLimit);
 
     res.status(200).json({
       success: true,
@@ -43,7 +43,7 @@ const comparePrices = asyncHandler(async (req, res) => {
   }
 
   try {
-    const comparison = comparisonService.comparePrices(item);
+    const comparison = await comparisonService.comparePrices(item);
 
     res.status(200).json({
       success: true,
@@ -187,7 +187,7 @@ const buildOptimalCart = asyncHandler(async (req, res) => {
   }
 
   try {
-    const cart = comparisonService.buildOptimalCart(items, budget);
+    const cart = await comparisonService.buildOptimalCart(items, budget);
 
     res.status(200).json({
       success: true,
@@ -208,5 +208,7 @@ module.exports = {
   getWalmartProduct,
   buildOptimalCart,
 };
+
+
 
 

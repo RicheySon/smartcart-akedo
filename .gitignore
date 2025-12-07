@@ -14,3 +14,12 @@ yarn-error.log*
 *.swo
 *~
 
+# Next.js build files
+client/.next/
+client/.next/*
+client/out/
+
+# Exclude markdown files
+*.md
+!.gitignore
+

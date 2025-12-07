@@ -14,7 +14,14 @@ async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
     })
 
     if (!res.ok) {
-        throw new Error(`API error: ${res.statusText}`)
+        let errorMessage = `API error: ${res.statusText}`
+        try {
+            const errorData = await res.json()
+            errorMessage = errorData.error?.message || errorData.message || errorMessage
+        } catch {
+            // If error response is not JSON, use status text
+        }
+        throw new Error(errorMessage)
     }
 
     return res.json()
@@ -43,6 +50,21 @@ export function useAddInventoryItem() {
     })
 }
 
+export function useUpdateInventoryItem() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: ({ id, updates }: { id: string, updates: Partial<InventoryItem> }) =>
+            fetcher(`/inventory/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(updates),
+            }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['inventory'] })
+        },
+    })
+}
+
 export function useDeleteInventoryItem() {
     const queryClient = useQueryClient()
 
@@ -61,7 +83,11 @@ export function useDeleteInventoryItem() {
 export function useShoppingList() {
     return useQuery({
         queryKey: ['shopping-list'],
-        queryFn: () => fetcher('/forecast/shopping-list'),
+        queryFn: async () => {
+            const response = await fetcher<any>('/forecast/shopping-list')
+            // Handle both wrapped { success, data } and direct array responses
+            return Array.isArray(response) ? response : (response.data || response)
+        },
     })
 }
 
