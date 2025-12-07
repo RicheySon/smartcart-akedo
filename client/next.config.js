@@ -2,6 +2,7 @@
 const nextConfig = {
     // Disable static page generation to prevent build errors
     output: 'standalone',
+    generateEtags: false,
     // For Vercel deployment, API routes are handled by serverless functions in /api
     // For local development, proxy to Express backend
     async rewrites() {
@@ -16,6 +17,9 @@ const nextConfig = {
         }
         // In production, API routes are handled by Vercel serverless functions
         return []
+    },
+    experimental: {
+        isrMemoryCacheSize: 0, // Disable ISR cache
     },
 }
 
