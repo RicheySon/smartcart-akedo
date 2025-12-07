@@ -9,7 +9,9 @@ const {
   importReceipt,
   getExpiringSoon,
   getByCategory,
+  getByCategory,
   getTotalValue,
+  importOCR
 } = require('../controllers/InventoryController');
 
 router.post('/', addItem);
@@ -29,6 +31,7 @@ router.put('/:id', updateItem);
 router.delete('/:id', deleteItem);
 
 router.post('/import-receipt', importReceipt);
+router.post('/import-ocr', importOCR);
 
 module.exports = router;
 

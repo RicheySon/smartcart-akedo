@@ -4,13 +4,15 @@ A production-ready Express.js backend server for SmartCart, a grocery shopping a
 
 ## Features
 
-- ✅ Inventory Management (CRUD operations)
+- ✅ Inventory Management (Persistent & Encrypted)
 - ✅ ML Forecasting (Linear regression for run-out prediction)
 - ✅ Transaction Approval & Risk Assessment
-- ✅ Audit Logging & Compliance
-- ✅ Mock Shopping Integrations (Amazon & Walmart)
-- ✅ Budget Management
+- ✅ Audit Logging & Compliance (Recoverable Logs)
+- ✅ Live/Mock Shopping Integrations (Amazon & Walmart)
+- ✅ Smart OCR inputs (Regex/NLP Parsing)
+- ✅ Budget Management (Monthly Caps)
 - ✅ Vendor Allowlist/Blocklist
+- ✅ Privacy-First Architecture (AES-256 Encryption, On-Device DB)
 - ✅ Comprehensive Test Suite (85 tests, 29% coverage)
 
 ## Tech Stack

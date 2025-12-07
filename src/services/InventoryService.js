@@ -1,193 +1,181 @@
-const inventory = require('../models/Inventory');
+const db = require('../db/index');
 const logger = require('../utils/logger');
+const ocrService = require('./SmartOCRService');
+
+const DEFAULT_TTL_DAYS = {
+  produce: 7,
+  dairy: 7,
+  meat: 7,
+  frozen: 30,
+  pantry: 30,
+  other: 30,
+};
+
+const VALID_CATEGORIES = ['produce', 'dairy', 'meat', 'pantry', 'frozen', 'other'];
+const VALID_UNITS = ['kg', 'lb', 'pieces', 'liters', 'bottles'];
 
 class InventoryService {
-  getInventory() {
-    try {
-      const items = inventory.list();
-      logger.debug(`Retrieved ${items.length} items from inventory`);
-      return {
-        success: true,
-        data: items,
-        count: items.length,
-      };
-    } catch (error) {
-      logger.error('Error getting inventory:', error);
-      throw error;
-    }
+  constructor() {
+    // No more in-memory Map
   }
 
-  addItem(itemData) {
-    try {
-      const item = inventory.add(itemData);
-      logger.info(`Item added successfully: ${item.id} - ${item.name}`);
-      return {
-        success: true,
-        data: item,
-        message: 'Item added successfully',
-      };
-    } catch (error) {
-      logger.error('Error adding item:', error);
-      throw error;
-    }
+  generateId() {
+    // Simple ID generator, or use uuid
+    return `item_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
   }
 
-  updateItem(id, updates) {
-    try {
-      const item = inventory.update(id, updates);
-      logger.info(`Item updated successfully: ${id}`);
-      return {
-        success: true,
-        data: item,
-        message: 'Item updated successfully',
-      };
-    } catch (error) {
-      logger.error(`Error updating item ${id}:`, error);
-      throw error;
-    }
+  calculateDefaultExpiration(category, purchaseDate = new Date()) {
+    const ttlDays = DEFAULT_TTL_DAYS[category] || DEFAULT_TTL_DAYS.other;
+    const expiration = new Date(purchaseDate);
+    expiration.setDate(expiration.getDate() + ttlDays);
+    return expiration;
   }
 
-  deleteItem(id) {
-    try {
-      const item = inventory.delete(id);
-      logger.info(`Item deleted successfully: ${id}`);
-      return {
-        success: true,
-        data: item,
-        message: 'Item deleted successfully',
-      };
-    } catch (error) {
-      logger.error(`Error deleting item ${id}:`, error);
-      throw error;
-    }
+  async getInventory() {
+    return db.getCollection('inventory');
   }
 
-  getItem(id) {
-    try {
-      const item = inventory.get(id);
-      return {
-        success: true,
-        data: item,
-      };
-    } catch (error) {
-      logger.error(`Error getting item ${id}:`, error);
-      throw error;
+  async addItem(itemData) {
+    const {
+      name,
+      quantity,
+      category,
+      price = 0,
+      expiration_date,
+      purchase_date = new Date(),
+      unit = 'pieces',
+    } = itemData;
+
+    // Validation
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+      throw new Error('Item name is required');
     }
-  }
+    if (quantity <= 0) throw new Error('Quantity must be positive');
+    if (!VALID_CATEGORIES.includes(category)) throw new Error('Invalid category');
 
-  importFromReceipt(receiptData) {
-    try {
-      if (!Array.isArray(receiptData.items)) {
-        throw new Error('Receipt data must contain an items array');
-      }
+    const purchaseDate = new Date(purchase_date);
+    let expirationDate = expiration_date ? new Date(expiration_date) : this.calculateDefaultExpiration(category, purchaseDate);
 
-      if (receiptData.items.length === 0) {
-        throw new Error('Receipt items array cannot be empty');
-      }
+    // Check Duplicate
+    const existing = db.findOne('inventory', i =>
+      i.name.toLowerCase() === name.trim().toLowerCase() && i.category === category
+    );
 
-      const results = {
-        success: true,
-        added: [],
-        updated: [],
-        errors: [],
-      };
-
-      receiptData.items.forEach((item, index) => {
-        try {
-          const itemData = {
-            name: item.name || item.item || item.product,
-            quantity: item.quantity || 1,
-            category: item.category || 'other',
-            price: item.price || item.cost || 0,
-            unit: item.unit || 'pieces',
-            expiration_date: item.expiration_date ? new Date(item.expiration_date) : undefined,
-            purchase_date: receiptData.purchase_date ? new Date(receiptData.purchase_date) : new Date(),
-          };
-
-          if (!itemData.name) {
-            throw new Error('Item name is required');
-          }
-
-          const existingItem = inventory.findDuplicate(itemData.name, itemData.category);
-          const result = inventory.add(itemData);
-
-          if (existingItem) {
-            results.updated.push(result);
-          } else {
-            results.added.push(result);
-          }
-        } catch (error) {
-          results.errors.push({
-            index,
-            item: item.name || item.item || `Item ${index + 1}`,
-            error: error.message,
-          });
-          logger.warn(`Error importing item at index ${index}:`, error.message);
-        }
+    if (existing) {
+      const updated = db.update('inventory', i => i.id === existing.id, {
+        quantity: existing.quantity + quantity,
+        price, // Update price to latest
+        updated_at: new Date().toISOString()
       });
+      logger.info(`Updated inventory item: ${name}`);
+      return updated;
+    }
 
-      results.message = `Imported ${results.added.length} new items, updated ${results.updated.length} existing items`;
-      if (results.errors.length > 0) {
-        results.message += `, ${results.errors.length} errors`;
+    const newItem = {
+      id: this.generateId(),
+      name: name.trim(),
+      quantity,
+      category,
+      price,
+      unit,
+      purchase_date: purchaseDate.toISOString(),
+      expiration_date: expirationDate.toISOString(),
+      added_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    db.insert('inventory', newItem);
+    logger.info(`Added inventory item: ${name}`);
+    return newItem;
+  }
+
+  async updateItem(id, updates) {
+    const item = db.findOne('inventory', i => i.id === id);
+    if (!item) throw new Error('Item not found');
+
+    const updated = db.update('inventory', i => i.id === id, updates);
+    logger.info(`Updated item ${id}`);
+    return updated;
+  }
+
+  async deleteItem(id) {
+    const removed = db.remove('inventory', i => i.id === id);
+    if (!removed) throw new Error('Item not found');
+    logger.info(`Deleted item ${id}`);
+    return removed;
+  }
+
+  async getItem(id) {
+    const item = db.findOne('inventory', i => i.id === id);
+    if (!item) throw new Error('Item not found');
+    return item;
+  }
+
+  async getExpiringSoon(days = 2) {
+    const now = new Date();
+    const threshold = new Date(now);
+    threshold.setDate(threshold.getDate() + days);
+
+    return db.find('inventory', item => {
+      const exp = new Date(item.expiration_date);
+      return exp >= now && exp <= threshold;
+    });
+  }
+
+  async getByCategory(category) {
+    return db.find('inventory', i => i.category === category);
+  }
+
+  async getTotalValue() {
+    const items = await this.getInventory();
+    return items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  }
+
+  // Helper for receipt import
+  async importFromReceipt(items, purchaseDate) {
+    const results = { added: 0, updated: 0, errors: 0 };
+    for (const item of items) {
+      try {
+        await this.addItem({
+          ...item,
+          purchase_date: purchaseDate
+        });
+        results.added++; // or updated, logic in addItem handles both but returns object
+      } catch (e) {
+        results.errors++;
+        logger.error(`Failed to import item ${item.name}: ${e.message}`);
       }
-
-      logger.info(`Receipt import completed: ${results.added.length} added, ${results.updated.length} updated, ${results.errors.length} errors`);
-      return results;
-    } catch (error) {
-      logger.error('Error importing receipt:', error);
-      throw error;
     }
+    return results;
   }
 
-  getByCategory(category) {
-    try {
-      const items = inventory.getByCategory(category);
-      logger.debug(`Retrieved ${items.length} items for category: ${category}`);
-      return {
-        success: true,
-        data: items,
-        count: items.length,
-        category,
-      };
-    } catch (error) {
-      logger.error(`Error getting items by category ${category}:`, error);
-      throw error;
+  // Smart Import from Raw Text
+  async importParsedReceipt(rawText) {
+    const parseResult = ocrService.parseReceiptText(rawText);
+    if (!parseResult.success) {
+      throw new Error('Could not parse any valid items from receipt text');
     }
-  }
 
-  getExpiringSoon(days = 2) {
-    try {
-      const items = inventory.getExpiringSoon(days);
-      logger.debug(`Retrieved ${items.length} items expiring within ${days} days`);
-      return {
-        success: true,
-        data: items,
-        count: items.length,
-        days,
-      };
-    } catch (error) {
-      logger.error('Error getting expiring items:', error);
-      throw error;
-    }
-  }
+    const results = { added: 0, errors: 0, items: [] };
 
-  getTotalValue() {
-    try {
-      const total = inventory.getTotalValue();
-      logger.debug(`Total inventory value: $${total.toFixed(2)}`);
-      return {
-        success: true,
-        data: {
-          total_value: total,
-          currency: 'USD',
-        },
-      };
-    } catch (error) {
-      logger.error('Error calculating total value:', error);
-      throw error;
+    for (const item of parseResult.items) {
+      try {
+        const added = await this.addItem({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          category: item.category,
+          unit: 'pieces'
+        });
+        results.added++;
+        results.items.push(added);
+      } catch (e) {
+        results.errors++;
+        logger.warn(`OCR Import Skip: ${item.name} - ${e.message}`);
+      }
     }
+    return results;
   }
 }
 
 module.exports = new InventoryService();
-
