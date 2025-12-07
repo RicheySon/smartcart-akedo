@@ -1,12 +1,14 @@
 // Vercel serverless function that handles all API routes
 // This wraps the Express backend for serverless deployment
+// Located in client/ directory to work with rootDirectory=client setting
 
 // Set Vercel environment flag before requiring app
 process.env.VERCEL = '1';
 
 let app;
 try {
-    app = require('../src/index');
+    // Path is relative to client/ directory, so go up one level to reach src/
+    app = require('../../src/index');
 } catch (error) {
     console.error('Failed to load Express app:', error);
     // Return error handler function
