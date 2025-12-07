@@ -10,15 +10,23 @@
     },
     "dependencies": {
         "@tanstack/react-query": "^5.62.0",
+        "body-parser": "^1.20.2",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
+        "cors": "^2.8.5",
+        "dotenv": "^16.6.1",
+        "express": "^4.18.2",
+        "express-rate-limit": "^7.1.5",
         "framer-motion": "^11.11.17",
+        "helmet": "^7.1.0",
         "lucide-react": "^0.468.0",
+        "morgan": "^1.10.0",
         "next": "^14.2.18",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "tailwind-merge": "^2.5.5",
         "tailwindcss-animate": "^1.0.7",
+        "uuid": "^13.0.0",
         "zustand": "^4.5.5"
     },
     "devDependencies": {
