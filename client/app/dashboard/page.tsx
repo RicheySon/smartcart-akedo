@@ -4,6 +4,10 @@ import { useInventory, useShoppingList } from '@/lib/api'
 import { Package, AlertTriangle, XCircle, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 
+// Disable static generation - this page uses client-side hooks
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default function DashboardPage() {
     const { data: inventory, isLoading: inventoryLoading } = useInventory()
     const { data: shoppingList, isLoading: listLoading } = useShoppingList()

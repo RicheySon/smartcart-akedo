@@ -6,7 +6,9 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useUIStore } from '@/lib/store'
 
-// Client component - no dynamic export needed
+// Disable static generation - this page uses client-side hooks
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default function CartPage() {
     const { data: cart, isLoading } = useCart()

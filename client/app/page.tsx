@@ -3,6 +3,10 @@
 import Link from 'next/link'
 import { ArrowRight, Sparkles, ShoppingCart, Brain } from 'lucide-react'
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default function HomePage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">

@@ -19,7 +19,9 @@ export const metadata: Metadata = {
     description: 'AI-powered grocery shopping with budget management',
 }
 
-// Removed force-dynamic to allow static optimization
+// Force dynamic rendering to avoid static generation issues
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default function RootLayout({
     children,

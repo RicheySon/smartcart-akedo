@@ -1,12 +1,11 @@
 // Global error boundary - must be a server component
-// Use a simple form with page reload instead of reset function
+// Cannot accept reset function prop as it causes serialization issues
 
 export default function GlobalError({
     error,
-    reset,
 }: {
     error: Error & { digest?: string }
-    reset: () => void
+    reset?: () => void // Optional, but we don't use it to avoid serialization issues
 }) {
     return (
         <html>

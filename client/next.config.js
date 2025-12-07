@@ -15,6 +15,8 @@ const nextConfig = {
         // In production, API routes are handled by Vercel serverless functions
         return []
     },
+    // Disable static optimization for all pages to avoid prerendering issues
+    output: 'standalone',
 }
 
 module.exports = nextConfig

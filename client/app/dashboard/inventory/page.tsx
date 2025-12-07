@@ -5,7 +5,9 @@ import { Package, Plus, Trash2, Edit2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 
-// Client component - no dynamic export needed
+// Disable static generation - this page uses client-side hooks
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default function InventoryPage() {
     const { data: inventory, isLoading } = useInventory()
