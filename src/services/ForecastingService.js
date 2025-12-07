@@ -298,3 +298,4 @@ class ForecastingService {
 
 module.exports = new ForecastingService();
 
+

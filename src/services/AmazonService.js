@@ -66,3 +66,4 @@ class AmazonService {
 }
 
 module.exports = new AmazonService();
+

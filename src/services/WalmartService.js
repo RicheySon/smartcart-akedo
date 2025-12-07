@@ -62,3 +62,4 @@ class WalmartService {
 }
 
 module.exports = new WalmartService();
+
