@@ -1,0 +1,186 @@
+.header-actions {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.search-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.search-section h3 {
+    margin-bottom: var(--spacing-lg);
+}
+
+.search-form {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.search-input {
+    flex: 1;
+    padding: var(--spacing-md);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-surface-light);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: 0.938rem;
+    font-family: var(--font-sans);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.search-results {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.product-option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+    transition: background var(--transition-fast);
+}
+
+.product-option:hover {
+    background: var(--color-surface-light);
+}
+
+.vendor-badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.vendor-badge.amazon {
+    background: rgba(255, 153, 0, 0.2);
+    color: #ff9900;
+}
+
+.vendor-badge.walmart {
+    background: rgba(0, 113, 220, 0.2);
+    color: #0071dc;
+}
+
+.product-info {
+    flex: 1;
+}
+
+.product-name {
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+}
+
+.product-price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-success);
+    margin-bottom: var(--spacing-xs);
+}
+
+.product-rating {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.recommendation {
+    padding: var(--spacing-md);
+    background: rgba(99, 102, 241, 0.1);
+    border-left: 3px solid var(--color-primary);
+    border-radius: var(--radius-sm);
+    color: var(--color-primary-light);
+    font-size: 0.938rem);
+}
+
+.cart-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+}
+
+.item-info {
+    flex: 1;
+}
+
+.item-name {
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.item-meta {
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.vendor-tag {
+    padding: 0.25rem 0.5rem;
+    background: var(--color-surface-light);
+    border-radius: var(--radius-sm);
+    text-transform: capitalize;
+}
+
+.item-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.item-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary-light);
+}
+
+.remove-btn {
+    background: none;
+    border: none;
+    color: var(--color-danger);
+    font-size: 1.5rem;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity var(--transition-fast);
+}
+
+.remove-btn:hover {
+    opacity: 1;
+}
+
+.cart-summary {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-xl);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    font-size: 1rem;
+}
+
+.summary-row.total {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 2px solid var(--color-surface-light);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary-light);
+}
