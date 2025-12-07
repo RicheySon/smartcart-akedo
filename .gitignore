@@ -19,7 +19,19 @@ client/.next/
 client/.next/*
 client/out/
 
-# Exclude markdown files
+# Database files (may contain sensitive data)
+smartcart.db.json
+smartcart.db.json.bak
+*.db.json
+/tmp/smartcart.db.json
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Test output
+test_output.txt
+
+# Exclude markdown files (as per user request)
 *.md
 !.gitignore
-

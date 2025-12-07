@@ -4,7 +4,19 @@ const path = require('path');
 const encryptionService = require('../utils/encryption');
 const logger = require('../utils/logger');
 
-const DB_PATH = process.env.DB_PATH ? process.env.DB_PATH + '.json' : './smartcart.db.json';
+// Use /tmp in serverless environments (Vercel, AWS Lambda), otherwise local path
+const getDbPath = () => {
+  if (process.env.DB_PATH) {
+    return process.env.DB_PATH.endsWith('.json') ? process.env.DB_PATH : process.env.DB_PATH + '.json';
+  }
+  // In serverless environments, use /tmp directory (writable)
+  if (process.env.VERCEL || process.env.VERCEL_ENV || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    return '/tmp/smartcart.db.json';
+  }
+  return './smartcart.db.json';
+};
+
+const DB_PATH = getDbPath();
 
 class SimpleDb {
     constructor() {

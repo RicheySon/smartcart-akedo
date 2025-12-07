@@ -46,36 +46,39 @@ app.use('/api/orders', require('./routes/orders'));
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-const server = app.listen(PORT, () => {
-  logger.info(`SmartCart server is running on port ${PORT}`);
-  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-});
-
-const gracefulShutdown = (signal) => {
-  logger.info(`${signal} received. Starting graceful shutdown...`);
-
-  server.close(() => {
-    logger.info('HTTP server closed.');
-    process.exit(0);
+// Only start server if not in serverless environment (Vercel)
+if (process.env.VERCEL !== '1' && !process.env.VERCEL_ENV) {
+  const server = app.listen(PORT, () => {
+    logger.info(`SmartCart server is running on port ${PORT}`);
+    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
   });
 
-  setTimeout(() => {
-    logger.error('Forced shutdown after timeout');
+  const gracefulShutdown = (signal) => {
+    logger.info(`${signal} received. Starting graceful shutdown...`);
+
+    server.close(() => {
+      logger.info('HTTP server closed.');
+      process.exit(0);
+    });
+
+    setTimeout(() => {
+      logger.error('Forced shutdown after timeout');
+      process.exit(1);
+    }, 10000);
+  };
+
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+  process.on('unhandledRejection', (reason, promise) => {
+    logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  });
+
+  process.on('uncaughtException', (error) => {
+    logger.error('Uncaught Exception:', error);
     process.exit(1);
-  }, 10000);
-};
-
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
-});
-
-process.on('uncaughtException', (error) => {
-  logger.error('Uncaught Exception:', error);
-  process.exit(1);
-});
+  });
+}
 
 module.exports = app;
 

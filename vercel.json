@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "buildCommand": "cd client && npm run build",
+  "outputDirectory": "client/.next",
+  "installCommand": "npm install && cd client && npm install",
+  "framework": "nextjs",
+  "functions": {
+    "api/[...path].js": {
+      "runtime": "nodejs18.x",
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ]
+}
