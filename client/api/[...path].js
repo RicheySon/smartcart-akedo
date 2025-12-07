@@ -4,6 +4,7 @@
 
 // Set Vercel environment flag before requiring app
 process.env.VERCEL = '1';
+process.env.VERCEL_ENV = process.env.VERCEL_ENV || 'production';
 
 let app;
 try {
@@ -11,13 +12,15 @@ try {
     app = require('../src/index');
 } catch (error) {
     console.error('Failed to load Express app:', error);
+    console.error('Error stack:', error.stack);
     // Return error handler function
     module.exports = async (req, res) => {
         res.status(500).json({
             success: false,
             error: {
                 message: 'Server initialization failed',
-                details: process.env.NODE_ENV === 'production' ? 'Internal server error' : error.message
+                details: error.message,
+                stack: process.env.NODE_ENV === 'production' ? undefined : error.stack
             }
         });
     };
