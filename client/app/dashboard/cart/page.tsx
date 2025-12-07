@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useUIStore } from '@/lib/store'
 
-export const dynamic = 'force-dynamic'
+// Client component - no dynamic export needed
 
 export default function CartPage() {
     const { data: cart, isLoading } = useCart()

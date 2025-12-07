@@ -4,8 +4,6 @@ import { useInventory, useShoppingList } from '@/lib/api'
 import { Package, AlertTriangle, XCircle, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 
-export const dynamic = 'force-dynamic'
-
 export default function DashboardPage() {
     const { data: inventory, isLoading: inventoryLoading } = useInventory()
     const { data: shoppingList, isLoading: listLoading } = useShoppingList()
