@@ -7,8 +7,8 @@ process.env.VERCEL = '1';
 
 let app;
 try {
-    // Path is relative to client/ directory, so go up one level to reach src/
-    app = require('../../src/index');
+    // Path is relative to client/ directory, src/ is now inside client/
+    app = require('../src/index');
 } catch (error) {
     console.error('Failed to load Express app:', error);
     // Return error handler function
