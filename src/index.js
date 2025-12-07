@@ -40,6 +40,8 @@ app.use('/api/forecast', forecastingRouter);
 app.use('/api/transactions', transactionsRouter);
 app.use('/api/audit', auditRouter);
 app.use('/api/shopping', shoppingRouter);
+app.use('/api/cart', require('./routes/cart'));
+app.use('/api/orders', require('./routes/orders'));
 
 app.use(notFoundHandler);
 app.use(errorHandler);
@@ -51,7 +53,7 @@ const server = app.listen(PORT, () => {
 
 const gracefulShutdown = (signal) => {
   logger.info(`${signal} received. Starting graceful shutdown...`);
-  
+
   server.close(() => {
     logger.info('HTTP server closed.');
     process.exit(0);

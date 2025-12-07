@@ -11,6 +11,7 @@ class SimpleDb {
         this.data = {
             inventory: [],
             transactions: [],
+            carts: [],
             audit_logs: [],
             settings: {}
         };
