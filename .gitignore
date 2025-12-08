@@ -32,6 +32,8 @@ coverage/
 # Test output
 test_output.txt
 
-# Exclude markdown files (as per user request)
+# Exclude markdown files (except essential docs)
 *.md
+!README.md
+!API_SETUP.md
 !.gitignore
