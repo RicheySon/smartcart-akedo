@@ -222,51 +222,15 @@ class ForecastingService {
   }
 
   generateShoppingList(inventory) {
+    // Generate predictions for ALL items using REAL ML
     const predictions = inventory.map(item => this.predictItemRunOut(item));
 
-    const urgent = [];
-    const soon = [];
-    const planned = [];
-
-    predictions.forEach(pred => {
-      const days = pred.prediction.days_until_runout;
-
-      if (pred.prediction.status === 'out_of_stock') {
-        urgent.push(pred);
-      } else if (pred.prediction.status === 'predicted') {
-        if (days <= 2) {
-          urgent.push(pred);
-        } else if (days <= 7) {
-          soon.push(pred);
-        } else {
-          planned.push(pred);
-        }
-      }
+    // Sort by urgency (soonest run-out first)
+    return predictions.sort((a, b) => {
+      const daysA = a.prediction.days_until_runout;
+      const daysB = b.prediction.days_until_runout;
+      return daysA - daysB;
     });
-
-    urgent.sort((a, b) => a.prediction.days_until_runout - b.prediction.days_until_runout);
-    soon.sort((a, b) => a.prediction.days_until_runout - b.prediction.days_until_runout);
-    planned.sort((a, b) => a.prediction.days_until_runout - b.prediction.days_until_runout);
-
-    return {
-      urgent: {
-        items: urgent,
-        count: urgent.length,
-        timeframe: '0-2 days',
-      },
-      soon: {
-        items: soon,
-        count: soon.length,
-        timeframe: '3-7 days',
-      },
-      planned: {
-        items: planned,
-        count: planned.length,
-        timeframe: '8+ days',
-      },
-      total_items: urgent.length + soon.length + planned.length,
-      generated_at: new Date().toISOString(),
-    };
   }
 
   getRecommendedQuantity(item, targetDays = 7) {
