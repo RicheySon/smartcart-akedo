@@ -7,7 +7,6 @@ import { useState } from 'react'
 
 // Disable static generation - this page uses client-side hooks
 export const dynamic = 'force-dynamic'
-export const revalidate = 0
 
 export default function InventoryPage() {
     const { data: inventory, isLoading } = useInventory()

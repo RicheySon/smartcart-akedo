@@ -2,13 +2,15 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Package, ShoppingCart, LogOut } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingCart, DollarSign, Brain, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import OrderModal from '@/components/OrderModal'
 
 const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Inventory', href: '/dashboard/inventory', icon: Package },
+    { name: 'Predictions', href: '/dashboard/predictions', icon: Brain },
+    { name: 'Budget Settings', href: '/dashboard/budget', icon: DollarSign },
     { name: 'Shopping Cart', href: '/dashboard/cart', icon: ShoppingCart },
 ]
 

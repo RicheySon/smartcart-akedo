@@ -1,13 +1,13 @@
 const forecastingService = require('../services/ForecastingService');
-const inventory = require('../models/Inventory');
+const inventoryService = require('../services/InventoryService');
 const { asyncHandler } = require('../middleware/errorHandler');
 const logger = require('../utils/logger');
 
 const getShoppingList = asyncHandler(async (req, res) => {
   try {
-    const inventoryItems = inventory.list();
+    const inventoryItems = await inventoryService.getInventory();
     const shoppingList = forecastingService.generateShoppingList(inventoryItems);
-    
+
     res.status(200).json({
       success: true,
       data: shoppingList,
@@ -22,9 +22,9 @@ const predictItemRunOut = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   try {
-    const item = inventory.get(id);
+    const item = await inventoryService.getItem(id);
     const prediction = forecastingService.predictItemRunOut(item);
-    
+
     res.status(200).json({
       success: true,
       data: prediction,
@@ -65,11 +65,11 @@ const recordUsage = asyncHandler(async (req, res) => {
   }
 
   try {
-    const item = inventory.get(item_id);
+    const item = await inventoryService.getItem(item_id);
     const newQuantity = Math.max(0, item.quantity - quantity_consumed);
-    
-    inventory.update(item_id, { quantity: newQuantity });
-    
+
+    await inventoryService.updateItem(item_id, { quantity: newQuantity });
+
     const history = forecastingService.recordUsage(
       item.name,
       quantity_consumed,
@@ -106,9 +106,9 @@ const getUsageHistory = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   try {
-    const item = inventory.get(id);
+    const item = await inventoryService.getItem(id);
     const history = forecastingService.getUsageHistory(item.name);
-    
+
     res.status(200).json({
       success: true,
       data: {
@@ -146,9 +146,9 @@ const getRecommendedQuantity = asyncHandler(async (req, res) => {
   }
 
   try {
-    const item = inventory.get(id);
+    const item = await inventoryService.getItem(id);
     const recommendation = forecastingService.getRecommendedQuantity(item, targetDays);
-    
+
     res.status(200).json({
       success: true,
       data: recommendation,
@@ -174,11 +174,3 @@ module.exports = {
   getUsageHistory,
   getRecommendedQuantity,
 };
-
-
-
-
-
-
-
-
