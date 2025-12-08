@@ -4,6 +4,6 @@
   "/dashboard/budget/page": "app/dashboard/budget/page.js",
   "/dashboard/inventory/page": "app/dashboard/inventory/page.js",
   "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/cart/page": "app/dashboard/cart/page.js",
-  "/dashboard/predictions/page": "app/dashboard/predictions/page.js"
+  "/dashboard/predictions/page": "app/dashboard/predictions/page.js",
+  "/dashboard/cart/page": "app/dashboard/cart/page.js"
 }
