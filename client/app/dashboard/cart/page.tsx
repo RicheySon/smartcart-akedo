@@ -8,7 +8,6 @@ import { useUIStore } from '@/lib/store'
 
 // Disable static generation - this page uses client-side hooks
 export const dynamic = 'force-dynamic'
-export const revalidate = 0
 
 export default function CartPage() {
     const { data: cart, isLoading } = useCart()
