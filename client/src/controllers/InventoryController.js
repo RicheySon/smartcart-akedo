@@ -179,7 +179,7 @@ const importReceipt = asyncHandler(async (req, res) => {
     });
   }
 
-  const result = inventoryService.importFromReceipt(receiptData.items, receiptData.purchase_date);
+  const result = inventoryService.importFromReceipt(receiptData);
   res.status(200).json(result);
 });
 

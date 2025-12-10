@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "buildCommand": "cd client && npm install --legacy-peer-deps && npm run build",
-  "outputDirectory": "client/.next",
-  "installCommand": "cd client && npm install --legacy-peer-deps",
+  "buildCommand": "sh -lc \"cd /vercel/path0/client && npm install --legacy-peer-deps --include=dev && npm run build\"",
+  "outputDirectory": ".next",
+  "installCommand": "sh /vercel/path0/vercel-install.sh",
   "framework": "nextjs",
   "functions": {
-    "api/[...path].js": {
+    "client/api/[...path].js": {
       "runtime": "nodejs18.x",
       "memory": 1024,
       "maxDuration": 30

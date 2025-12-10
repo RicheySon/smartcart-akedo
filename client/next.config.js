@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
+
 const nextConfig = {
     // For Vercel deployment, API routes are handled by serverless functions in /api
     // For local development, proxy to Express backend
@@ -17,6 +19,8 @@ const nextConfig = {
     },
     // Disable static optimization for all pages to avoid prerendering issues
     output: 'standalone',
+    // When Next.js is inside a monorepo/workspace, set tracing root to repository root
+    outputFileTracingRoot: path.join(__dirname, '..'),
 }
 
 module.exports = nextConfig

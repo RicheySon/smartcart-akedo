@@ -3,7 +3,8 @@ const budgetService = require('./BudgetService');
 const transactionService = require('./TransactionService');
 const inventoryService = require('./InventoryService');
 const logger = require('../utils/logger');
-const { v4: uuidv4 } = require('uuid');
+// Lightweight id generator to avoid ESM uuid issues in test environments
+const genId = () => `id_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
 
 class OrderService {
     async previewOrder() {
@@ -37,7 +38,7 @@ class OrderService {
         }
 
         // Execute Order
-        const transactionId = uuidv4();
+        const transactionId = genId();
 
         // 1. Create Transaction Record
         const transaction = {

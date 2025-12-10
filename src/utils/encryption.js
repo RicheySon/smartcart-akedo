@@ -3,16 +3,23 @@ const logger = require('./logger');
 
 const ALGORITHM = 'aes-256-cbc';
 const IV_LENGTH = 16; // For AES, this is always 16
-const KEY_HEX = process.env.ENCRYPTION_KEY;
+const KEY_ENV = process.env.ENCRYPTION_KEY;
 
-if (!KEY_HEX || KEY_HEX.length !== 64) {
-    logger.warn('Invalid or missing ENCRYPTION_KEY in .env. Using a fallback key for development only. THIS IS NOT SECURE.');
+// If a proper 64-hex char key is provided, use it. Otherwise derive a 32-byte key
+// from the provided string (or a fallback) using SHA-256 so key length is valid.
+let KEY;
+if (KEY_ENV && KEY_ENV.length === 64 && /^[0-9a-fA-F]+$/.test(KEY_ENV)) {
+    KEY = Buffer.from(KEY_ENV, 'hex');
+} else {
+    if (!KEY_ENV) {
+        logger.warn('Missing ENCRYPTION_KEY in environment. Using a development fallback key. THIS IS NOT SECURE.');
+    } else {
+        logger.warn('Invalid ENCRYPTION_KEY length or format; deriving key via SHA-256 for compatibility.');
+    }
+    const crypto = require('crypto');
+    const seed = KEY_ENV || 'smartcart-dev-fallback-key-please-set-env-var';
+    KEY = crypto.createHash('sha256').update(seed).digest();
 }
-
-// Fallback key for dev safety if .env is messed up (do not use in prod)
-const KEY = KEY_HEX && KEY_HEX.length === 64
-    ? Buffer.from(KEY_HEX, 'hex')
-    : Buffer.from('56cc476aa957b531d05c49d8163d10db2bc2ea43f491c3d10db2b1234567', 'hex');
 
 class EncryptionService {
     encrypt(text) {
