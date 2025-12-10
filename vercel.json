@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "sh -lc \"if [ -f package.json ]; then npm install --legacy-peer-deps && npm run build; elif [ -f client/package.json ]; then cd client && npm install --legacy-peer-deps && npm run build; else echo 'No client package.json found' && exit 1; fi\"",
   "outputDirectory": "client/.next",
-  "installCommand": "npm install --legacy-peer-deps",
+  "installCommand": "npm install --legacy-peer-deps && npm --prefix client install --legacy-peer-deps --include=dev",
   "framework": "nextjs",
   "functions": {
     "client/api/[...path].js": {
