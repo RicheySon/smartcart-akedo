@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "cd client && npm install --legacy-peer-deps && npm run build",
+  "buildCommand": "npm --prefix client install --legacy-peer-deps && npm --prefix client run build",
   "outputDirectory": "client/.next",
-  "installCommand": "npm install --legacy-peer-deps && cd client && npm install --legacy-peer-deps",
+  "installCommand": "npm install --legacy-peer-deps && npm --prefix client install --legacy-peer-deps",
   "framework": "nextjs",
   "functions": {
     "client/api/[...path].js": {
