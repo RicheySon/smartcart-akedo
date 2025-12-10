@@ -20,6 +20,8 @@ class WalmartService {
 
     if (this.isLive) {
       logger.info('Walmart Service: Live Keys Detected.');
+    } else {
+      logger.info('Walmart Service: No Keys. Switching to Simulation Mode.');
     }
   }
 
