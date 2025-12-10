@@ -50,15 +50,7 @@
       "static/chunks/959-2c7446e13597b495.js",
       "static/chunks/app/dashboard/layout-bd124e9a90441081.js"
     ],
-    "/dashboard/budget/page": [
-      "static/chunks/webpack-118ba20a31f01972.js",
-      "static/chunks/4bd1b696-c023c6e3521b1417.js",
-      "static/chunks/255-47484af636b98715.js",
-      "static/chunks/main-app-b94a5e8fcae2d810.js",
-      "static/chunks/851-8d404663d631002a.js",
-      "static/chunks/app/dashboard/budget/page-3ce49e067e630367.js"
-    ],
-    "/dashboard/inventory/page": [
+    "/dashboard/cart/page": [
       "static/chunks/webpack-118ba20a31f01972.js",
       "static/chunks/4bd1b696-c023c6e3521b1417.js",
       "static/chunks/255-47484af636b98715.js",
@@ -66,7 +58,7 @@
       "static/chunks/851-8d404663d631002a.js",
       "static/chunks/141-4791e518db04b88c.js",
       "static/chunks/802-e89c36c6be47e516.js",
-      "static/chunks/app/dashboard/inventory/page-11d74b0097beb5af.js"
+      "static/chunks/app/dashboard/cart/page-838177ec4a397c38.js"
     ],
     "/dashboard/page": [
       "static/chunks/webpack-118ba20a31f01972.js",
@@ -88,7 +80,15 @@
       "static/chunks/802-e89c36c6be47e516.js",
       "static/chunks/app/dashboard/predictions/page-40501db42694e77b.js"
     ],
-    "/dashboard/cart/page": [
+    "/dashboard/budget/page": [
+      "static/chunks/webpack-118ba20a31f01972.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/255-47484af636b98715.js",
+      "static/chunks/main-app-b94a5e8fcae2d810.js",
+      "static/chunks/851-8d404663d631002a.js",
+      "static/chunks/app/dashboard/budget/page-3ce49e067e630367.js"
+    ],
+    "/dashboard/inventory/page": [
       "static/chunks/webpack-118ba20a31f01972.js",
       "static/chunks/4bd1b696-c023c6e3521b1417.js",
       "static/chunks/255-47484af636b98715.js",
@@ -96,7 +96,7 @@
       "static/chunks/851-8d404663d631002a.js",
       "static/chunks/141-4791e518db04b88c.js",
       "static/chunks/802-e89c36c6be47e516.js",
-      "static/chunks/app/dashboard/cart/page-838177ec4a397c38.js"
+      "static/chunks/app/dashboard/inventory/page-11d74b0097beb5af.js"
     ]
   }
 }

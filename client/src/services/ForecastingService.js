@@ -276,6 +276,11 @@ class ForecastingService {
     if (history.length >= 2) {
       const regression = this.simpleLinearRegression(history);
       dailyUsageRate = Math.abs(regression.slope);
+      // If regression couldn't determine a slope (e.g. constant values),
+      // fall back to category-based estimates to avoid recommending 0 quantity.
+      if (!dailyUsageRate || dailyUsageRate === 0) {
+        dailyUsageRate = this.estimateDailyUsage(item.category);
+      }
     } else {
       dailyUsageRate = this.estimateDailyUsage(item.category);
     }

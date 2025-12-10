@@ -1,6 +1,7 @@
 const db = require('../db/index');
 const logger = require('../utils/logger');
-const { v4: uuidv4 } = require('uuid');
+// Lightweight id generator to avoid ESM uuid issues in test environments
+const genId = () => `id_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
 
 class CartService {
     constructor() {
@@ -15,7 +16,7 @@ class CartService {
 
         if (!cart) {
             cart = {
-                id: uuidv4(),
+                id: genId(),
                 items: [],
                 status: 'active',
                 created_at: new Date().toISOString(),
