@@ -1,7 +1,7 @@
 {
   "version": 2,
   "buildCommand": "sh -lc \"cd /vercel/path0/client && npm install --legacy-peer-deps --include=dev && npm run build\"",
-  "outputDirectory": "client/.next",
+  "outputDirectory": ".next",
   "installCommand": "sh /vercel/path0/vercel-install.sh",
   "framework": "nextjs",
   "functions": {
